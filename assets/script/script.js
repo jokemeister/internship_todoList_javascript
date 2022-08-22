@@ -44,7 +44,7 @@ function stateCheck(date, done, content, checkbox) {
 }
 
 function renderAllTasks(db) {
-    db.map((task) => renderTask(task));
+    db.forEach(renderTask);
 };
 
 renderAllTasks(toDoList);
