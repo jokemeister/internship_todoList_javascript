@@ -1,7 +1,12 @@
+// idGenerator
+    const inc = (init = 0) => () => ++init;
+    const genId = inc();
+// /idGenerator
+
 const db = [
-    {id: 1, name: 'Увімкнути тахометр', description: 'Інакше буде боляче', done: true, due_date: '2022-08-22', list_id: 1},
-    {id: 2, name: 'Доробити верстку макету', done: false, due_date: '2022-08-20', list_id: 1},
-    {id: 3, name: 'Піти додому', description: 'Інакше мене закриють у офісі', done: false, due_date: '2022-08-23', list_id: 1},
+    {id: genId(), name: 'Увімкнути тахометр', description: 'Інакше буде боляче', done: true, due_date: '2022-08-22', list_id: 1},
+    {id: genId(), name: 'Доробити верстку макету', done: false, due_date: '2022-08-20', list_id: 1},
+    {id: genId(), name: 'Піти додому', description: 'Інакше мене закриють у офісі', done: false, due_date: '2022-08-23', list_id: 1},
 ];
 
 // default markup elements
@@ -67,6 +72,7 @@ const db = [
 
     function checkboxHandler(e, task, taskEl) {
         db[db.indexOf(task)].done = e.target.checked;
+        console.log(task);
         if (_displayRule === 'all') taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]))
         else {
             if (db[db.indexOf(task)].done === _displayRule) taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]));
