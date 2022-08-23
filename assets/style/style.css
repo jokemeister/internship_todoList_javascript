@@ -33,6 +33,11 @@
         background-color: var(--light-50);
     }
 
+    button {
+        background: none;
+        border: none;
+    }
+
     /* checkboxes */
 
         input[type='checkbox'] {
@@ -168,38 +173,71 @@
     /* /sidebar__footer */
 /* /sidebar */
 
-/* hero */
-    .hero {
+/* main */
+    main {
         max-width: 1668px;
         width: 86.875%;
         height: 100vh;
     }
-    /* hero__header */
-        .hero__header {
+    /* header */
+        .header {
             padding-top: 32px;
             padding-bottom: 24px;
         }
 
-        .hero__header__top {
+        .header__top {
             display: flex;
             gap: 6px;
             align-items: center;
             margin-bottom: 4px;
         }
 
-        .hero__header__top-menu {
+        .header__top__menu {
             cursor: pointer;
             width: 12px;
             height: 12px;
         }
 
-        .hero__header__bot-text {
+        .header__bot-text {
             font-size: 14px;
+            margin-bottom: 24px;
         }
-    /* /hero__header */
 
-    /* hero__content */
-        .hero__content-task {
+        .header__nav-btn {
+            font-size: 16px;
+            margin-right: 24px;
+            cursor: pointer;
+        }
+
+        .header__nav-btn:hover {
+            color: var(--blue-100);
+        }
+
+        .header__nav-btn.is-active {
+            position: relative;
+            color: var(--blue-100);
+        }
+
+        .header__nav-btn.is-active::after {
+            position: absolute;
+            content: '';
+            background-color: var(--blue-100);
+            width: 100%;
+            height: 2px;
+            border-radius: 4px;
+            bottom: -4px;
+            left: 0;
+        }
+    /* /header */
+
+    /* content */
+        .task, 
+        .task__body, 
+        .task__remove {
+            cursor: pointer;
+        }
+
+        .task {
             position: relative;
             background-color: white;
             border: 1px solid var(--border-100);
@@ -209,7 +247,7 @@
             margin-bottom: 20px;
         }
 
-        .hero__content-task::before {
+        .task::before {
             content: '';
             position: absolute;
             background-color: var(--gray-3-100);
@@ -218,7 +256,7 @@
             height: 4px;
         }
         
-        .hero__content-task__deadline {
+        .task__deadline {
             display: flex;
             margin: 18px 0 25px 20px;
             gap: 9px;
@@ -226,49 +264,63 @@
         }
 
 
-        .hero__content-task.overdue::before {
+        .task.overdue::before {
             background-color: var(--red-100);
         }
 
-        .hero__content-task.overdue
-        .hero__content-task__deadline {
+        .task.overdue
+        .task__deadline {
             color: var(--red-100);
         }
 
-        .hero__content-task.done::before {
+        .task.done::before {
             background-color: var(--green-100);
         }
 
-        .hero__content-task.done .hero__content-task__deadline {
+        .task.done .task__deadline {
             color: var(--green-100);
         }
 
-        .hero__content-task__deadline-svg {
+        .task__deadline-svg {
             width: 14px;
             height: 14px;
         }
 
-        .hero__content-task__body {
+        .task__body {
             display: flex;
             align-items: flex-start;
             gap: 8px;
             margin: 0 0 20px 20px;
-            cursor: pointer;
         }
 
-        .hero__content-task__body-title {
+        .task__body-title {
             font-weight: 700;
             margin-bottom: 8px;
         }
 
-        .hero__content-task__body-desc {
+        .task__body-desc {
             font-size: 12px;
         }
-    /* /hero__content */
-/* /hero */
+
+        .task__remove {
+            position: absolute;
+            right: 3%;
+            color: var(--gray-3-100);
+        }
+
+        .task__remove:hover {
+            color: black;
+        }
+
+        .task__remove-svg {
+            width: 14px;
+            height: 14px;
+        }
+    /* /content */
+/* /main */
 
 
-@media screen and (max-width:1600px) {
+/* @media screen and (max-width:1600px) {
     body {
         font-size: 24px;
     }
@@ -286,16 +338,16 @@
         font-size: 10px;
     }
 
-    .hero__header__top__title {
+    .header__top__title {
         font-size: 36px;
     }
 
-    .hero__header__bot-text {
+    .header__bot-text {
         font-size: 22px;
     }
 
-    .hero__content-task__body-desc {
+    .task__body-desc {
         font-size: 22px;
     }
-}
+} */
 
