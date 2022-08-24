@@ -57,12 +57,12 @@
                 <p class="header__bot-text">Загальна дошка в системі, що містить поточні завдання для всіх контракторів</p>
 
                 <nav class="header__nav">
-                    <button class="header__nav-btn is-active" value="all">Всі</button>
-                    <button class="header__nav-btn" value="false">У роботі</button>
-                    <button class="header__nav-btn" value="true">Виконані</button>
+                    <button class="header__nav-btn is-active" value="show-all">Всі</button>
+                    <button class="header__nav-btn" value="show-unDone">У роботі</button>
+                    <button class="header__nav-btn" value="show-done">Виконані</button>
                 </nav>
             </div>
-            <div class="content">
+            <div class="content show-all">
                 <template class="task-template">
                     <div class="task">
                         <span class="task__deadline">

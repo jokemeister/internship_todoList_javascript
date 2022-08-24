@@ -231,6 +231,24 @@
     /* /header */
 
     /* content */
+        /* optional display */
+            .content.show-all .task {
+                display: block;
+            }
+
+            .content.show-unDone .task.done {
+                display: none;
+            }
+
+            .content.show-done .task {
+                display: none;
+            }
+
+            .content.show-done .task.done {
+                display: block;
+            }
+        /* /optional display */
+        
         .task, 
         .task__body, 
         .task__remove {
@@ -254,6 +272,10 @@
             top: 0;
             width: 100%;
             height: 4px;
+        }
+
+        .task.hidden {
+            display: none;
         }
         
         .task__deadline {

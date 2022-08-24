@@ -21,14 +21,12 @@ const db = [
 // /navBar functionality
 
 // toDoList render
-    let _displayRule = 'all';
     renderAllTasks();
 // /toDoList render
 
 // render functions
     function renderAllTasks() {
-        if (_displayRule === 'all') db.forEach(renderOneTask);
-        else db.filter(task => task.done.toString() === _displayRule).forEach(renderOneTask);
+        db.forEach(renderOneTask);
     };
 
     function renderOneTask (task) {
@@ -50,7 +48,7 @@ const db = [
 
             // functionality on events of components
                 taskCheckbox.addEventListener('change', (e) => checkboxHandler(e, task, taskEl));
-                taskRemove.addEventListener('click', (e) => removeBtnHandler(task, taskEl));
+                taskRemove.addEventListener('click', () => removeBtnHandler(task, taskEl));
             // /functionality on events of components
             stateCheck(task.due_date, task.done, taskEl, taskCheckbox)
 
@@ -64,7 +62,11 @@ const db = [
 // handlers
     function navButtonHandler(e) {
         tasksBlock.innerHTML = '';
-        _displayRule = e.target.value
+        tasksBlock.classList.remove('show-all');
+        tasksBlock.classList.remove('show-done');
+        tasksBlock.classList.remove('show-unDone');
+        tasksBlock.classList.add(e.target.value);
+        
         renderAllTasks();
         navButtons.forEach(btn => btn.classList.remove('is-active'));
         e.target.classList.add('is-active');
@@ -72,12 +74,7 @@ const db = [
 
     function checkboxHandler(e, task, taskEl) {
         db[db.indexOf(task)].done = e.target.checked;
-        console.log(task);
-        if (_displayRule === 'all') taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]))
-        else {
-            if (db[db.indexOf(task)].done === _displayRule) taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]));
-            else taskEl.remove();
-        }
+        taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]));
     }
 
     function removeBtnHandler(task, taskEl) {
