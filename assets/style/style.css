@@ -9,22 +9,30 @@
         --light-50: rgba(247, 247, 250, 0.5);
         --border-100: rgba(232, 239, 246, 1);
 
+        /* checkbox border */
         --checkbox-gray-100: rgba(218, 218, 218, 1);
         --checkbox-gray-hover: rgba(197, 199, 218, 1);
 
+        /* task states */
         --red-100: rgba(230, 50, 65, 1);
         --green-100: rgba(88, 172, 131, 1);
         --gray-3-100: rgba(217, 217, 217, 1);
         
+        /* input border */
+        --gray-4-100: rgba(227, 236, 243, 1);
+
+        /* cross inActive */
+        --gray-5-54: rgba(0, 0, 0, 0.54);
         /* /colors */
     }
     * {
         margin: 0;
         padding: 0;
+        font-family: 'Roboto', sans-serif;
+        box-sizing: border-box;
     }
 
     body {
-        font-family: 'Roboto', sans-serif;
         display: flex;
         flex-wrap: nowrap;
         width: 100vw;
@@ -38,7 +46,12 @@
         border: none;
     }
 
-    /* checkboxes */
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* checkbox */
 
         input[type='checkbox'] {
             appearance: none;
@@ -70,13 +83,96 @@
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
-    /* /checkboxes */
+    /* /checkbox */
+
+    /* text-input */
+
+        input[type='text'],
+        textarea {
+            border: 1px solid var(--gray-4-100);
+            border-radius: 4px;
+            margin-top: 8px;
+            margin-left: 22px;
+            padding: 8px;
+            outline: none;
+            width: calc(100% - 24px);
+        }
+        
+        input[type='text'] {
+            margin-bottom: 12px;
+        }
+
+        textarea {
+            resize: none;
+            height: 149px;
+        }
+
+        label {
+            position: relative;
+        }
+
+        input.invalid + .error-msg {
+            opacity: 1;
+            transition: .7s;
+        }
+
+        .error-msg {
+            position: absolute;
+            right: 2px;
+            bottom: -4px;
+            display: block;
+            margin-left: 24px;
+            font-size: 12px;
+            color: red;
+            opacity: 0;
+        }
+
+
+    /* /text-input */
 
     .container {
         max-width: 1136px;
         width: 68.1%;
         margin: 0 auto;
     }
+
+    /* button */
+
+    .btn {
+        font-size: 14px;
+        font-weight: 500;
+        padding: 8px 19.5px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-blue {
+        background-color: var(--blue-100);
+        color: white;
+    }
+
+    .btn-gray {
+        background-color: rgba(239, 239, 239, 1);
+        color: rgba(109, 110, 130, 1);
+    }
+
+    .cross-btn {
+        position: absolute;
+        right: 3%;
+        color: var(--gray-5-54);
+        cursor: pointer;
+    }
+
+    .cross-btn:hover {
+        color: black;
+    }
+
+    .cross-btn__svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    /* /button */
 
 /* /global */
 
@@ -200,25 +296,28 @@
 
         .header__bot-text {
             font-size: 14px;
-            margin-bottom: 24px;
         }
 
-        .header__nav-btn {
+        .header__btn-open-modal {
+            margin: 24px 0;
+        }
+
+        .header__nav-link {
             font-size: 16px;
             margin-right: 24px;
             cursor: pointer;
         }
 
-        .header__nav-btn:hover {
+        .header__nav-link:hover {
             color: var(--blue-100);
         }
 
-        .header__nav-btn.is-active {
+        .header__nav-link.is-active {
             position: relative;
             color: var(--blue-100);
         }
 
-        .header__nav-btn.is-active::after {
+        .header__nav-link.is-active::after {
             position: absolute;
             content: '';
             background-color: var(--blue-100);
@@ -229,6 +328,107 @@
             left: 0;
         }
     /* /header */
+
+    /* modal */
+        .addTask-modal {
+            position: absolute;
+            top: -1000px;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transition: .7s;
+            background-color: rgba(38, 40, 55, 0.15);
+        }
+
+        .addTask-modal.is-active {
+            top: 0;
+            bottom: 0;
+        }
+
+        .addTask-modal-content {
+            /* position: relative; */
+            position: absolute;
+            top: 204px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 16px 24px 20px;
+            z-index: 101;
+            width: 479px;
+            max-height: 444px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+        }
+        
+        .addTask-modal__header {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            width: 100%;
+            border-bottom: 1px solid var(--border-100);
+            padding-bottom: 16px;
+            margin-bottom: 8px;
+        }
+
+        .addTask-modal__title {
+            font-weight: 500;
+        }
+
+        .addTask-modal__close-btn {
+            right: 0;   
+        }
+
+        .addTask__form {
+            display: flex;
+            flex-flow: column nowrap;
+        }
+
+        .addTask__form__name-input.invalid {
+            position: relative;
+            border-color: red;
+        }
+
+        .addTask__form__name-input.invalid::after {
+            content: "Обов'язкове поле";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            z-index: 10000;
+            top: 0;
+            left: 0;
+            color: red;
+        }
+
+        .addTask__form__deadline-label__svg,
+        .addTask__form__name-label__svg,
+        .addTask__form__desc-label__svg {
+            margin-right: 8px;
+        }
+
+        .addTask-modal__close-btn__svg,
+        .addTask__form__name-label__svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .addTask__form__deadline-label__svg,
+        .addTask__form__desc-label__svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .addTask__form__btn-block {
+            margin-top: 24px;
+        }
+
+        .addTask__form__btn {
+            margin-right: 8px;
+        }
+
+    /* /modal */
 
     /* content */
         /* optional display */
@@ -323,53 +523,5 @@
         .task__body-desc {
             font-size: 12px;
         }
-
-        .task__remove {
-            position: absolute;
-            right: 3%;
-            color: var(--gray-3-100);
-        }
-
-        .task__remove:hover {
-            color: black;
-        }
-
-        .task__remove-svg {
-            width: 14px;
-            height: 14px;
-        }
     /* /content */
 /* /main */
-
-
-/* @media screen and (max-width:1600px) {
-    body {
-        font-size: 24px;
-    }
-
-    .sidebar__header {
-        padding: 15px 25px 15px 15px;
-    }
-
-    .sidebar__header__logo {
-        width: 16px;
-        height: 16px;
-    }
-
-    .sidebar__header__developer {
-        font-size: 10px;
-    }
-
-    .header__top__title {
-        font-size: 36px;
-    }
-
-    .header__bot-text {
-        font-size: 22px;
-    }
-
-    .task__body-desc {
-        font-size: 22px;
-    }
-} */
-
