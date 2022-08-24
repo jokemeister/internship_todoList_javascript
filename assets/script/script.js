@@ -72,7 +72,6 @@ const db = [
 
     function checkboxHandler(e, task, taskEl) {
         db[db.indexOf(task)].done = e.target.checked;
-        console.log(task);
         if (_displayRule === 'all') taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]))
         else {
             if (db[db.indexOf(task)].done === _displayRule) taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]));
