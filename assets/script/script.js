@@ -21,12 +21,14 @@ const db = [
 // /navBar functionality
 
 // toDoList render
-    let _displayRule = 'all';
+    let _displayRule;
+    tasksBlock.setAttribute('display', 'all')
     renderAllTasks();
 // /toDoList render
 
 // render functions
     function renderAllTasks() {
+        _displayRule = tasksBlock.getAttribute('display')
         if (_displayRule === 'all') db.forEach(renderOneTask);
         else db.filter(task => task.done.toString() === _displayRule).forEach(renderOneTask);
     };
@@ -63,16 +65,19 @@ const db = [
 
 // handlers
     function navButtonHandler(e) {
+        tasksBlock.setAttribute('display', e.target.value)
+
         tasksBlock.innerHTML = '';
-        _displayRule = e.target.value
         renderAllTasks();
+
         navButtons.forEach(btn => btn.classList.remove('is-active'));
         e.target.classList.add('is-active');
     }
 
     function checkboxHandler(e, task, taskEl) {
         db[db.indexOf(task)].done = e.target.checked;
-        console.log(task);
+
+        _displayRule = tasksBlock.getAttribute('display');
         if (_displayRule === 'all') taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]))
         else {
             if (db[db.indexOf(task)].done === _displayRule) taskEl.replaceWith(renderOneTask(db[db.indexOf(task)]));
@@ -82,8 +87,7 @@ const db = [
 
     function removeBtnHandler(task, taskEl) {
         db.splice(db.indexOf(task), 1);
-        console.log(db);
-        return taskEl.remove();
+        taskEl.remove();
     }
 // /handlers
 
