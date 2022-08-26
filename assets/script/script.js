@@ -69,8 +69,8 @@ firstRender();
         taskForm.addEventListener('submit', e => {
             e.preventDefault();
             const formData = new FormData(taskForm);
-            const task = Object.fromEntries([...formData.entries(), ['done', false]]);
-
+            const task = Object.fromEntries(formData.entries());
+            task.done = false;
             if (!formValidation(task, taskForm)) return;
             task.due_date = dateValidation(task.due_date);
             taskForm.name.classList.remove('invalid');
@@ -157,6 +157,7 @@ firstRender();
         if (!formValidation(list, listForm)) return;
         createList(list);
         renderOneList(list, asideListsBlock);
+        listForm.reset();
     }
 
     async function listChooseHandler(e, list) {
@@ -183,9 +184,9 @@ firstRender();
     };
 
     async function checkboxHandler(e, task, taskEl) {
-        await checkTask(e, task.id);
+        task = await checkTask(e, task.id);
 
-        let newTaskEl = renderOneTask(await getTaskById(task.id))
+        let newTaskEl = renderOneTask(task)
         taskEl.replaceWith(newTaskEl);
     };
 
@@ -204,7 +205,6 @@ firstRender();
 // /handlers
 
 // request functions
-
     async function getLists(url) {
         let response = await fetch(url);
         let result = await handleError(response).json();
@@ -264,7 +264,7 @@ firstRender();
             body: JSON.stringify({ "done": e.target.checked })
         })
         let result = await handleError(response).json()
-        return result.id;
+        return result;
     }
 
     async function getTaskById(taskId) {
