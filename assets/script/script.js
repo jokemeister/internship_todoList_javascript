@@ -1,76 +1,123 @@
-// idGenerator
-    const inc = (init = 3) => () => ++init;
-    const genId = inc();
-// /idGenerator
+// database
+    const tasksEndpoint = 'http://localhost:3000/tasks';
+    const listsEndpoint = 'http://localhost:3000/lists';
 
 // database
-const tasksEndpoint = 'http://localhost:3000/tasks';
-
-function getTasks(url) {
-    fetch(url)
-        .then(response => response.json())
-        .then(renderAllTasks)
-}
-
-getTasks(tasksEndpoint);
-
-// database
-
 
 // default markup elements
-const navBar = document.querySelector('.header__nav');
-const tasksBlock = document.querySelector('.content');
-const taskTemplate = document.querySelector('.task-template');
+    const loaderTemplate = document.querySelector('.loader-template');
+    // main
+    const navBar = document.querySelector('.header__nav');
+    const tasksBlock = document.querySelector('.content');
+    const taskTemplate = document.querySelector('.task-template');
+
+    // sidebar list
+    const asideListsBlock = document.querySelector('.sidebar__list');
+    const listTemplate = document.querySelector('.sidebar__list-item-template');
+    const defaultList = document.querySelector('.default-list');
+    // modal selector
+    const selectorListsBlock = document.querySelector('.addTask__form__list-selector');
 // /default markup elements
 
+// first render
+async function firstRender() {
+    addLoader(tasksBlock);
+    await getLists(listsEndpoint);
+    await getTasks(tasksEndpoint);
+
+    defaultList.addEventListener('click', e => {
+        listChooseHandler(e);
+        getTasks(tasksEndpoint);
+    })
+};
+
+firstRender();
+
+// /first render
+
+// sidebar functionality
+    const listForm = document.forms['list'];
+    listForm.addEventListener('submit', createListHandler)
+// sidebar functionality
+
 // navBar functionality
-const navButtons = navBar.querySelectorAll('.header__nav-link');
-navButtons.forEach(btn => btn.addEventListener('click', navButtonHandler));
+    const navButtons = navBar.querySelectorAll('.header__nav-link');
+    navButtons.forEach(btn => btn.addEventListener('click', navButtonHandler));
 // /navBar functionality
 
 // modal functionality
-const modalBg = document.querySelector('.addTask-modal');
-// open modal
-    const openModalBtn = document.querySelector('.header__btn-open-modal');
-    openModalBtn.addEventListener('click', openModalBtnHandler);
-// /open modal
+    const modalBg = document.querySelector('.addTask-modal');
+    const modalContent = modalBg.querySelector('.addTask-modal-content');
+    
+    // open modal
+        const openModalBtn = document.querySelector('.header__btn-open-modal');
+        openModalBtn.addEventListener('click', openModalBtnHandler);
+    // /open modal
 
-// close modal
-    const modalCloseButtons = modalBg.querySelectorAll('.addTask-modal__close-btn');
-    modalCloseButtons.forEach(btn => btn.addEventListener('click', closeModalBtnHandler));
+    // close modal
+        const modalCloseButtons = modalBg.querySelectorAll('.addTask-modal__close-btn');
+        modalCloseButtons.forEach(btn => btn.addEventListener('click', closeModalBtnHandler));
 
-    modalBg.addEventListener('click', e => {
-        if (e.target.classList.contains('addTask-modal')) closeModalBtnHandler()
-    })
-// /close modal
+        modalBg.addEventListener('click', e => {
+            if (e.target.classList.contains('addTask-modal')) closeModalBtnHandler()
+        })
+    // /close modal
 
-// addTask
-    const taskForm = document.forms['addTask'];
+    // addTask
+        const taskForm = document.forms['addTask'];
 
-    taskForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const formData = new FormData(taskForm);
-        const task = Object.fromEntries([...formData.entries(), ['done', false], ['list_id', '1']]);
-        if (!taskFormValidation(task, taskForm)) return;
+        taskForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const formData = new FormData(taskForm);
+            const task = Object.fromEntries([...formData.entries(), ['done', false]]);
 
-        taskForm.name.classList.remove('invalid');
-        taskForm.reset();
-        createTask(task)
-            .then(renderOneTask)
-    })
-// /addTask
+            if (!formValidation(task, taskForm)) return;
+            task.due_date = dateValidation(task.due_date);
+            taskForm.name.classList.remove('invalid');
+            addLoader(modalContent);
+            createTask(task)
+                .then(renderOneTask);
+            taskForm.reset();
+            removeLoader(modalContent);
+        })
+    // /addTask
 // /modal functionality
 
-// toDoList render
-    // renderAllTasks(generateDatabase(tasksEndpoint));
-// /toDoList render
-
 // render functions
-    async function renderAllTasks(db) {
+    function renderAllLists(db, parent) {
+        db.forEach(list => renderOneList(list, parent));
+    };
+
+    function renderOneList(list, parent) {
+        let listEl;
+        // render lists for sidebar
+        if (parent === asideListsBlock) {
+            const listTemplateClone = listTemplate.content.cloneNode(true);
+            listEl = listTemplateClone.querySelector('.sidebar__list-item');
+            const listTitle = listTemplateClone.querySelector('.sidebar__list-item__title');
+            const listRemoveBtn = listTemplateClone.querySelector('.list__remove')
+
+            listEl.addEventListener('click', e => listChooseHandler(e, list));
+            listRemoveBtn.addEventListener('click', () => listDeleteHandler(list, listEl));
+
+            listTitle.textContent = list.name;
+        // render lists for selector in modal
+        } else if (parent === selectorListsBlock) {
+            listEl = document.createElement('option')
+            listEl.classList.add('addTask__form__list-selector__option');
+            listEl.textContent = list.name;
+            listEl.value = list.id;
+        }
+
+        parent.append(listEl);
+    };
+
+    function renderAllTasks(db) {
+        tasksBlock.innerHTML = '';
         db.forEach(renderOneTask);
     };
 
-    function renderOneTask (task) {
+    function renderOneTask(task) {
         if ('content' in document.createElement('template')) {
             const taskTemplateClone = taskTemplate.content.cloneNode(true);
 
@@ -91,7 +138,7 @@ const modalBg = document.querySelector('.addTask-modal');
             taskDate.textContent = task.due_date ? task.due_date.toISOString().split('T')[0] : '';
 
             // functionality on events of components
-                taskCheckbox.addEventListener('change', (e) => checkboxHandler(e, task, taskEl));
+                taskCheckbox.addEventListener('change', e => checkboxHandler(e, task, taskEl));
                 taskRemove.addEventListener('click', () => removeBtnHandler(task, taskEl));
             // /functionality on events of components
             stateCheck(task.due_date, task.done, taskEl, taskCheckbox)
@@ -104,6 +151,27 @@ const modalBg = document.querySelector('.addTask-modal');
 // /render functions
 
 // handlers
+    async function createListHandler(e) {
+        e.preventDefault();
+        let list = {name: listForm.name.value}
+        if (!formValidation(list, listForm)) return;
+        createList(list);
+        renderOneList(list, asideListsBlock);
+    }
+
+    async function listChooseHandler(e, list) {
+        const allLists = asideListsBlock.querySelectorAll('.sidebar__list-item')
+        allLists.forEach(list => list.classList.remove('is-active'));
+
+        e.currentTarget.classList.add('is-active');
+        if (list) await getOneList(listsEndpoint, list.id);
+    }
+
+    async function listDeleteHandler(list, listEl) {
+        await deleteList(list.id)
+        listEl.remove();
+    }
+
     function navButtonHandler(e) {
         tasksBlock.classList.remove('show-all');
         tasksBlock.classList.remove('show-done');
@@ -136,15 +204,55 @@ const modalBg = document.querySelector('.addTask-modal');
 // /handlers
 
 // request functions
-    function createTask(task) {
-        return fetch(tasksEndpoint, {
+
+    async function getLists(url) {
+        let response = await fetch(url);
+        let result = await handleError(response).json();
+        renderAllLists(result, asideListsBlock)
+        renderAllLists(result, selectorListsBlock)
+    }
+
+    async function getOneList(url, listId) {
+        url += `/${listId}/tasks?all=true`;
+        let response = await fetch(url);
+        let result = await handleError(response).json();
+        await renderAllTasks(result)
+    }
+
+    async function createList(list) {
+        let response = await fetch(listsEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(list)
+        })
+        let result = await handleError(response).json()
+        return result;
+    }
+
+    async function deleteList(listId) {
+        let response = await fetch(`${listsEndpoint}/${listId}`, { method: 'DELETE' });
+        let result = await handleError(response).json()
+        return result[0];
+    }
+    
+    async function getTasks(url) {
+        let response = await fetch(url);
+        let result = await handleError(response).json();
+        renderAllTasks(result);
+    }
+
+    async function createTask(task) {
+        let response = await fetch(tasksEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(task)
         })
-        .then(response => response.json())
+        let result = await handleError(response).json();
+        return result;
     }
 
     async function checkTask(e, taskId) {
@@ -155,30 +263,37 @@ const modalBg = document.querySelector('.addTask-modal');
             },
             body: JSON.stringify({ "done": e.target.checked })
         })
-        if (response.ok) {
-            let result = await response.json();
-            return result.id
-        } else throw Error(response.status + ': ' + response.statusText);
+        let result = await handleError(response).json()
+        return result.id;
     }
 
     async function getTaskById(taskId) {
         let response = await fetch(`${tasksEndpoint}/${taskId}`)
-        if (response.ok) {
-            let result = await response.json();
-            return result[0];
-        } else throw Error(response.status + ': ' + response.statusText);
+        let result = await handleError(response).json()
+        return result[0];
     }
 
     async function deleteTask(taskId) {
         let response = await fetch(`${tasksEndpoint}/${taskId}`, { method: 'DELETE' });
-        if (response.ok) {
-            let result = await response.json();
-            return result[0];
-        } else throw Error(response.status + ': ' + response.statusText);
+        let result = await handleError(response).json()
+        return result[0];
     }
 // /request functions
 
 // service functions
+    function addLoader(parent) {
+        const loaderTemplateClone = loaderTemplate.content.cloneNode(true);
+
+        // components of template
+            const loaderEl = loaderTemplateClone.querySelector('.loader-bg');
+        parent.append(loaderEl);
+    }
+
+    function removeLoader(parent) {
+        const loaderEl = parent.querySelector('.loader-bg');
+        loaderEl.remove();
+    }
+
     function stateCheck(date, done, content, checkbox) {
         const now = new Date();
         const today = new Date(now.toISOString().split('T')[0] + 'T00:00:00');
@@ -194,14 +309,23 @@ const modalBg = document.querySelector('.addTask-modal');
     };
 
     function dateValidation(date) {
-        if (date == 'Invalid Date') date = '';
+        if (new Date(date) == 'Invalid Date') date = '9999-12-31';
         return date;
     };
 
-    function taskFormValidation(task, form) {
-        if (!task.name) {
+    function formValidation(model, form) {
+        if (!model.name) {
             form.name.classList.add('invalid');
             return false;
-        } else return true;
+        } else {
+            return true;
+        }
     };
+
+    function handleError(res) {
+        if(res.ok) {
+            return res;
+        } else throw Error(res.status + ': ' + res.statusText);
+    }
 // /service functions
+
